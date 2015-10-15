@@ -9,10 +9,21 @@ class Particle {
   public float lifetime;
   // When the particle was born, constant
   public float birthTime;
-  public boolean dying;
+  // If this particle can die
+  public boolean canDie;
+  // If this particle has been born
+  public boolean isAlive;
+  // If this particle already knows its children
+  public boolean hasChildren;
+  // The current generation, 1-indexed
   public int generation;
+  // Parent particle, needs this to keep track of when it is at risk
   public Particle parent;
+  // Children to process
   public Queue<Particle> children;
+  // number of children
+  public int numChildren;
+  // Coordinates
   public float x;
   public float y;
   // Red color component
@@ -22,30 +33,41 @@ class Particle {
   // Blue color component
   public int b = 0;
   
+  // PShape graphics
   PShape part;
+  // Can contribute towards particle system fields
   ParticleSystem ps;
   
   // Coefficients for linear scaling of each color
   public float[] rCoef, gCoef, bCoef;
   
-  public Particle(ParticleSystem ps, float lifetime, float birthTime, Particle parent, float x, float y) {
+  public Particle(ParticleSystem ps, float lifetime, float birthTime, Particle parent) {
     this.ps = ps;
     this.initialLifetime = lifetime;
     this.lifetime = lifetime;
     this.birthTime = birthTime;
     this.parent = parent;
-    this.dying = false;
+    this.canDie = false;
     this.rCoef = new float[]{(float) -r/ lifetime, r};
     this.gCoef = new float[]{(float) -g/ lifetime, g};
     this.bCoef = new float[]{(float) -b/ lifetime, b};
-    this.x = x;
-    this.y = y;
     if (parent == null) {
       this.generation = 1;
     } else {
       this.generation = parent.generation + 1;
     }
-    generateChildren();
+    if (isAlive && !hasChildren) {
+      ps.createGeneration(this.generation);
+    }
+    //generateChildren();
+  }
+  
+  public void setX(float x) {
+    this.x = x;
+  }
+  
+  public void setY(float y) {
+    this.y = y;
   }
   
   public boolean isDead() {
@@ -59,6 +81,8 @@ class Particle {
   }
   
   public void generateChildren() {
+    // Probably not necessary
+    this.hasChildren = true;
     Queue<Float> birthTimes = generateChildrenTimes();
     children = new LinkedList<Particle>();
     int numChildren = birthTimes.size();
@@ -71,6 +95,7 @@ class Particle {
       Particle p = new Particle(5, birthTimes.poll(), this, newX, newY);
       children.add(p);
     }
+    numChildren = children.size();
   }
 
   public Queue<Float> generateChildrenTimes() {
@@ -85,8 +110,13 @@ class Particle {
   }
   
   public void update(double timeElapsed) {
+    // TODO: change the timings, computer color, set this to alive when it is time
     lifetime = initialLifetime - (float) (timeElapsed - birthTime);
     computeColor(timeElapsed - birthTime);
+  }
+  
+  public void setAlive() {
+    this.isAlive = true;
   }
   
   public void display() {
