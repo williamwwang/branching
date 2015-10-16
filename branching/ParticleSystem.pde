@@ -4,7 +4,7 @@ import java.util.LinkedList;
 public class ParticleSystem {
   public float lambda;
   // Safety net
-  public int MAX_CAPACITY = 1000;
+  public int MAX_CAPACITY = 2000;
   // DO NOT CHANGE WHILE ITERATING
   ArrayList<Particle> particles;
   

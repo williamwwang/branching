@@ -78,6 +78,7 @@ class Particle {
     setX(x);
     setY(y);
     this.part = createShape(ELLIPSE, x, y, (float)ps.PARTICLE_WIDTH, (float)ps.PARTICLE_HEIGHT);
+    this.part.setVisible(false);
     addEdge();
   }
   
@@ -89,6 +90,7 @@ class Particle {
     }
     edge.vertex(x, y);
     edge.endShape(CLOSE);
+    edge.setVisible(false);
   }
   
   public boolean hasShape() {
@@ -131,11 +133,10 @@ class Particle {
   public Queue<Float> generateChildrenTimes() {
     Queue<Float> birthTimes = new LinkedList<Float>();
     RNG waitingTimes = new RNG(new ExponentialDistribution(ps.lambda));
-    float newBirthtime = waitingTimes.sample();
-    float currentTime = millis() * (float) ps.TSCALE;
-    while (newBirthtime <= this.initialLifetime) {
-      birthTimes.add(currentTime + newBirthtime);
-      newBirthtime += waitingTimes.sample();
+    float waitingTime = waitingTimes.sample();
+    while (waitingTime <= this.initialLifetime) {
+      birthTimes.add(this.birthTime + waitingTime);
+      waitingTime += waitingTimes.sample();
     }
     return birthTimes;
   }
@@ -144,11 +145,15 @@ class Particle {
     // TODO: change the timings, computer color, set this to alive when it is time
     if (!born && millis()*ps.TSCALE >= this.birthTime) {
       this.setBorn();
-    } else if (isDead()) {
-      this.part.setStroke(color(0, 0, 0));
+      this.part.setVisible(true);
+      this.edge.setVisible(true);
+    } else if (!born || isDead()) {
+      /*this.part.setStroke(color(0, 0, 0));
       this.part.setFill(color(0, 0, 0));
       this.edge.setStroke(color(0, 0, 0));
-      this.edge.setFill(color(0, 0, 0));
+      this.edge.setFill(color(0, 0, 0));*/
+      this.part.setVisible(false);
+      this.edge.setVisible(false);
       return;
     }
     // The time this particle has been alive
@@ -157,8 +162,13 @@ class Particle {
     computeColor(timeElapsed);
     this.part.setStroke(color(r, g, b));
     this.part.setFill(color(r, g, b));
-    this.edge.setStroke(color(r, g, b));
-    this.edge.setFill(color(r, g, b));
+    if (parent == null) {
+      this.edge.setStroke(color(0, 0, 0));
+      this.edge.setFill(color(0, 0, 0));
+    } else {
+      this.edge.setStroke(color(parent.r, parent.g, parent.b));
+      this.edge.setFill(color(parent.r, parent.g, parent.b));
+    }
   }
   
   public void setBorn() {
