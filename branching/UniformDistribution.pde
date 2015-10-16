@@ -23,7 +23,7 @@ class UniformDistribution extends Distribution {
   class UniformInvCDF implements Function {
     
     public float apply(float x) {
-      return (b-a)*x;
+      return (b-a) * x + a;
     }
   }
   

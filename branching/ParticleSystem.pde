@@ -1,8 +1,15 @@
 import java.util.Queue;
+import java.util.LinkedList;
 
 public class ParticleSystem {
   public float lambda;
+  // Safety net
+  public int MAX_CAPACITY = 1000;
+  // DO NOT CHANGE WHILE ITERATING
   ArrayList<Particle> particles;
+  
+  // DO NOT ITERATE THROUGH ME UNTIL UPDATE
+  Queue<Particle> newParticles;
   
   PShape particleShape;
   // Maybe have an Exponential RNG?
@@ -17,9 +24,9 @@ public class ParticleSystem {
 
   /* Constants */
   // Height of particle
-  double PARTICLE_HEIGHT = 20;
+  double PARTICLE_HEIGHT = 10;
   // Width of particle
-  double PARTICLE_WIDTH = 20;
+  double PARTICLE_WIDTH = 10;
   // Vertical padding
   double VPAD = 5;
   // Vertical space of connections (edges)
@@ -27,9 +34,12 @@ public class ParticleSystem {
   // Horizontal scaling factor: hspace_gen{x+1} = hspace_gen{x}*HSCALE
   //double HSCALE = 1.2;
   // Time scaling factor: .001 (millis -> sec)
-  double TSCALE = .001;
+  float TSCALE = .001;
   
   public ParticleSystem(float lambda, Distribution dist) {
+    // Possibly move this to branching
+    ellipseMode(CENTER);
+    colorMode(RGB, 255, 255, 255);
     this.lambda = lambda;
     this.rand = new RNG(dist);
     particles = new ArrayList<Particle>();
@@ -38,11 +48,14 @@ public class ParticleSystem {
     generationCount = new ArrayList<Integer>();
     generationCount.add(1);
     
+    newParticles = new LinkedList<Particle>();
     // Create the generation queue
     generationQueue = new ArrayList<Queue<Particle>>();
-    Queue<Particle> firstGen = new Queue<Particle>();
-    Particle p = new Particle(this, rand.sample() * TSCALE, millis() * TSCALE, null);
+    Queue<Particle> firstGen = new LinkedList<Particle>();
+    Particle p = new Particle(this, rand.sample(), millis() * TSCALE, null);
+    p.setCoordinates((float) displayWidth / 2, (float) VPAD + (float) PARTICLE_HEIGHT / 2);
     firstGen.add(p);
+    println(p.lifetime);
     generationQueue.add(0, firstGen);
     particles.add(p);
     particleShape.addChild(p.getShape());
@@ -54,7 +67,7 @@ public class ParticleSystem {
     if (thisGeneration == null) {
       return;
     }
-    Queue<Particle> nextGeneration = new Queue<Particle>();
+    Queue<Particle> nextGeneration = new LinkedList<Particle>();
     Particle p = thisGeneration.poll();
     while (p != null) {
       p.generateChildren();
@@ -73,22 +86,35 @@ public class ParticleSystem {
     // Possible bug: int division?
     // double totalSpace = displayWidth / ps.generationCount.get(this.generation);
     // double spacePerChild = totalSpace / this.numChildren;
-    double spacePerChild = displayWidth / (ps.generationCount.get(i) + 1);
+    double spacePerChild = displayWidth / (generationCount.get(i) + 1);
     // x-coordinates
-    double x = 0;
+    float x = 0;
     // y-coordinates
-    double y = VPAD + (i - 1) * (PARTICLE_HEIGHT + EDGE_HEIGHT) + PARTICLE_HEIGHT / 2;
+    float y = (float) (VPAD + (i - 1) * (PARTICLE_HEIGHT + EDGE_HEIGHT) + PARTICLE_HEIGHT / (float) 2);
     Queue<Particle> thisGeneration = generationQueue.get(i);
     for (Particle p : thisGeneration) {
       x += spacePerChild;
-      p.setX(x);
-      p.setY(y);
+      //p.setX(x);
+      //p.setY(y);
+      p.setCoordinates(x, y);
     }
   }
   
   void update() {
     for (Particle p: particles) {
       p.update();
+    }
+    // Add all new particles
+    if (particles.size() >= MAX_CAPACITY) {
+      println("Max capacity reached!");
+      return;
+    }
+    Particle p = newParticles.poll();
+    while (p != null) {
+      particles.add(p);
+      particleShape.addChild(p.getShape());
+      particleShape.addChild(p.edge);
+      p = newParticles.poll();
     }
   }
   
