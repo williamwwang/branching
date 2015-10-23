@@ -174,7 +174,7 @@ class Particle {
   public void setBorn() {
     this.born = true;
     if (!hasChildren) {
-      ps.createGeneration(this.generation);
+      ps.createGeneration(this.generation + 1);
     }
   }
   
@@ -184,5 +184,9 @@ class Particle {
     }
     fill(this.r, this.g, this.b);
     ellipse(x, y, 50, 50);
+  }
+  
+  public String toString() {
+    return "Generation: " + generation + "Coordinates: [" + x + ", " + y + "]";
   }
 }

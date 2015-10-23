@@ -63,40 +63,42 @@ public class ParticleSystem {
   
   // Creates the i-th generation, 1-indexed.
   public void createGeneration(int i) {
-    Queue<Particle> thisGeneration = generationQueue.get(i - 1);
-    if (thisGeneration == null) {
+    Queue<Particle> previousGeneration = generationQueue.get(i - 2);
+    if (previousGeneration == null) {
       return;
     }
     Queue<Particle> nextGeneration = new LinkedList<Particle>();
-    Particle p = thisGeneration.poll();
+    Particle p = previousGeneration.poll();
     while (p != null) {
       p.generateChildren();
       for (Particle child : p.children) {
         nextGeneration.add(child);
       }
-      p = thisGeneration.poll();
+      p = previousGeneration.poll();
     }
-    generationQueue.add(i, nextGeneration);
+    generationQueue.add(i - 1, nextGeneration);
     generationCount.add(nextGeneration.size());
     setChildCoordinates(i);
   }
   
   public void setChildCoordinates(int i) {
+    println("i: " + i);
     // Look at number of children in generation to see how much space this particle can allocate
     // Possible bug: int division?
     // double totalSpace = displayWidth / ps.generationCount.get(this.generation);
     // double spacePerChild = totalSpace / this.numChildren;
-    double spacePerChild = displayWidth / (generationCount.get(i) + 1);
+    double spacePerChild = displayWidth / (generationCount.get(i - 1) + 1);
     // x-coordinates
     float x = 0;
     // y-coordinates
     float y = (float) (VPAD + (i - 1) * (PARTICLE_HEIGHT + EDGE_HEIGHT) + PARTICLE_HEIGHT / (float) 2);
-    Queue<Particle> thisGeneration = generationQueue.get(i);
+    Queue<Particle> thisGeneration = generationQueue.get(i - 1);
     for (Particle p : thisGeneration) {
       x += spacePerChild;
       //p.setX(x);
       //p.setY(y);
       p.setCoordinates(x, y);
+      println(p);
     }
   }
   

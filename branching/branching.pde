@@ -1,7 +1,7 @@
 ParticleSystem ps;
-float a = 5; // .1
-float b = 7; // .2
-float lambda = .16; // 10
+float a = 6; // .1
+float b = 8; // .2
+float lambda = .2; // 10
 
 void setup() {
   size(displayWidth, displayHeight);
