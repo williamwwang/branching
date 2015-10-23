@@ -9,6 +9,8 @@ class Particle {
   public float lifetime;
   // When the particle was born, constant
   public float birthTime;
+  // When this particle will die
+  public float deathTime;
   // If this particle can die
   public boolean canDie;
   // If this particle has been born
@@ -47,6 +49,13 @@ class Particle {
     this.initialLifetime = lifetime;
     this.lifetime = lifetime;
     this.birthTime = birthTime;
+    if (ps.mode == 1) {
+      this.deathTime = birthTime + lifetime;
+    } else if (ps.mode == 2) {
+      if (parent == null) this.deathTime = birthTime + lifetime;
+      else this.deathTime = parent.deathTime + lifetime;
+    }
+    //  println("Death Time: " + deathTime);
     this.parent = parent;
     this.canDie = false;
     this.rCoef = new float[]{(float) -r/ lifetime, r};
@@ -105,9 +114,15 @@ class Particle {
   }
   
   public void computeColor(double timeElapsed) {
-    this.r = max((int) (rCoef[0]*timeElapsed + rCoef[1]), 0);
-    this.g = max((int) (gCoef[0]*timeElapsed + gCoef[1]), 0);
-    this.b = max((int) (bCoef[0]*timeElapsed + bCoef[1]), 0);
+    if (ps.mode == 2 && timeElapsed < 0) {
+      this.r = 255;
+      this.g = 0;
+      this.b = 0;
+    } else {
+      this.r = max((int) (rCoef[0]*timeElapsed + rCoef[1]), 0);
+      this.g = max((int) (gCoef[0]*timeElapsed + gCoef[1]), 0);
+      this.b = max((int) (bCoef[0]*timeElapsed + bCoef[1]), 0);
+    }
   }
   
   public void generateChildren() {
@@ -156,10 +171,23 @@ class Particle {
       this.edge.setVisible(false);
       return;
     }
-    // The time this particle has been alive
-    float timeElapsed = millis()*ps.TSCALE - this.birthTime;
-    lifetime = initialLifetime - timeElapsed;
-    computeColor(timeElapsed);
+    if (ps.mode == 2) {
+      float timeElapsed = 0;
+      if (parent == null) timeElapsed = millis()*ps.TSCALE;
+      else {
+        timeElapsed = millis()*ps.TSCALE - parent.deathTime;
+      }
+      computeColor(timeElapsed);
+      if (timeElapsed > 0) {
+        lifetime = initialLifetime - timeElapsed;
+      }
+    }
+    else {
+      // The time this particle has been alive
+      float timeElapsed = millis()*ps.TSCALE - this.birthTime;
+      lifetime = initialLifetime - timeElapsed;
+      computeColor(timeElapsed);
+    }
     this.part.setStroke(color(r, g, b));
     this.part.setFill(color(r, g, b));
     if (parent == null) {
@@ -178,6 +206,10 @@ class Particle {
     }
   }
   
+  public void die() {
+    this.part.setVisible(false);
+    this.edge.setVisible(false);
+  }
   public void display() {
     if (isDead()) {
       return;
@@ -187,6 +219,6 @@ class Particle {
   }
   
   public String toString() {
-    return "Generation: " + generation + "Coordinates: [" + x + ", " + y + "]";
+    return "Generation: " + generation + " Coordinates: [" + x + ", " + y + "]";
   }
 }

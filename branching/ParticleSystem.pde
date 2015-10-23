@@ -1,12 +1,15 @@
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Comparator;
 
 public class ParticleSystem {
   public float lambda;
   // Safety net
-  public int MAX_CAPACITY = 2000;
+  public int MAX_CAPACITY = 15000;
   // DO NOT CHANGE WHILE ITERATING
-  ArrayList<Particle> particles;
+  // ArrayList<Particle> particles;
+  Queue<Particle> particles;
   
   // DO NOT ITERATE THROUGH ME UNTIL UPDATE
   Queue<Particle> newParticles;
@@ -36,13 +39,20 @@ public class ParticleSystem {
   // Time scaling factor: .001 (millis -> sec)
   float TSCALE = .001;
   
-  public ParticleSystem(float lambda, Distribution dist) {
+  // Modes:
+  // 1: Galton-Watson
+  // 2: Birth-and-Assassination
+  int mode;
+  
+  public ParticleSystem(float lambda, Distribution dist, int mode) {
     // Possibly move this to branching
     ellipseMode(CENTER);
     colorMode(RGB, 255, 255, 255);
     this.lambda = lambda;
     this.rand = new RNG(dist);
-    particles = new ArrayList<Particle>();
+    this.mode = mode;
+    // particles = new ArrayList<Particle>();
+    particles = new PriorityQueue<Particle>(100, new ParticleDeathComparator());
     particleShape = createShape(PShape.GROUP);
     
     generationCount = new ArrayList<Integer>();
@@ -63,6 +73,7 @@ public class ParticleSystem {
   
   // Creates the i-th generation, 1-indexed.
   public void createGeneration(int i) {
+    println("Generation: " + i);
     Queue<Particle> previousGeneration = generationQueue.get(i - 2);
     if (previousGeneration == null) {
       return;
@@ -82,11 +93,11 @@ public class ParticleSystem {
   }
   
   public void setChildCoordinates(int i) {
-    println("i: " + i);
     // Look at number of children in generation to see how much space this particle can allocate
     // Possible bug: int division?
     // double totalSpace = displayWidth / ps.generationCount.get(this.generation);
     // double spacePerChild = totalSpace / this.numChildren;
+    println("Number in generation:" + generationCount.get(i-1));
     double spacePerChild = displayWidth / (generationCount.get(i - 1) + 1);
     // x-coordinates
     float x = 0;
@@ -98,29 +109,55 @@ public class ParticleSystem {
       //p.setX(x);
       //p.setY(y);
       p.setCoordinates(x, y);
-      println(p);
+      //println(p);
     }
   }
   
   void update() {
-    for (Particle p: particles) {
-      p.update();
+    for (Particle part: particles) {
+      part.update();
+    }
+    Particle p = particles.peek();
+    float currTime = millis() * TSCALE;
+    /*if (p != null) {
+      println("Death Time: " + p.deathTime);
+      println("Current Time: " + currTime);
+    }*/
+    while (p != null && p.deathTime <= currTime) {
+      p.die();
+      particles.poll();
+      p = particles.peek();
     }
     // Add all new particles
     if (particles.size() >= MAX_CAPACITY) {
-      println("Max capacity reached!");
+      println("Max capacity reached! " + particles.size());
       return;
     }
-    Particle p = newParticles.poll();
+    if (generationCount.size() >= 32) {
+      println("Max generation reached: " + generationCount.size());
+      return;
+    }
+    p = newParticles.poll();
     while (p != null) {
       particles.add(p);
       particleShape.addChild(p.getShape());
       particleShape.addChild(p.edge);
       p = newParticles.poll();
     }
+
   }
   
   void display() {
     shape(particleShape);
+  }
+  
+  class ParticleDeathComparator implements Comparator<Particle> {
+    // p1 < p2 if p1 death time is after p2 death time
+    @Override
+    public int compare(Particle p1, Particle p2) {
+      if (p1.deathTime < p2.deathTime) return -1;
+      if (p1.deathTime > p2.deathTime) return 1;
+      return 0;
+    }
   }
 }
