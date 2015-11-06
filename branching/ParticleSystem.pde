@@ -6,7 +6,10 @@ import java.util.Comparator;
 public class ParticleSystem {
   public float lambda;
   // Safety net
-  public int MAX_CAPACITY = 15000;
+  public int MAX_CAPACITY = 1000;
+  public boolean maxCapacityReached = false;
+  public boolean simulationDone = false;
+  public boolean result;
   // DO NOT CHANGE WHILE ITERATING
   // ArrayList<Particle> particles;
   Queue<Particle> particles;
@@ -33,7 +36,7 @@ public class ParticleSystem {
   // Vertical padding
   double VPAD = 5;
   // Vertical space of connections (edges)
-  double EDGE_HEIGHT = 10;
+  double EDGE_HEIGHT = 15;
   // Horizontal scaling factor: hspace_gen{x+1} = hspace_gen{x}*HSCALE
   //double HSCALE = 1.2;
   // Time scaling factor: .001 (millis -> sec)
@@ -99,6 +102,7 @@ public class ParticleSystem {
     // double spacePerChild = totalSpace / this.numChildren;
     println("Number in generation:" + generationCount.get(i-1));
     double spacePerChild = displayWidth / (generationCount.get(i - 1) + 1);
+    if (spacePerChild == 0) maxCapacityReached = true;
     // x-coordinates
     float x = 0;
     // y-coordinates
@@ -131,12 +135,19 @@ public class ParticleSystem {
     // Add all new particles
     if (particles.size() >= MAX_CAPACITY) {
       println("Max capacity reached! " + particles.size());
+      maxCapacityReached = true;
       return;
     }
     if (generationCount.size() >= 32) {
       println("Max generation reached: " + generationCount.size());
       return;
     }
+    if (particles.size() == 0) {
+      simulationDone = true;
+      if (maxCapacityReached) result = true;
+      else result = false;
+    }
+    if (maxCapacityReached) return;
     p = newParticles.poll();
     while (p != null) {
       particles.add(p);

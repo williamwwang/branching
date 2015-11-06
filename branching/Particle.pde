@@ -29,9 +29,9 @@ class Particle {
   public float x;
   public float y;
   // Red color component
-  public int r = 0;
+  public int r = 255;
   // Green color component
-  public int g = 255;
+  public int g = 0;
   // Blue color component
   public int b = 0;
   
@@ -86,7 +86,11 @@ class Particle {
   public void setCoordinates(float x, float y) {
     setX(x);
     setY(y);
-    this.part = createShape(ELLIPSE, x, y, (float)ps.PARTICLE_WIDTH, (float)ps.PARTICLE_HEIGHT);
+    if (generation > 0 && ps.generationCount.get(generation - 1) > 50) {
+      this.part = createShape(ELLIPSE, x, y, (float) ps.PARTICLE_WIDTH / 2, (float)ps.PARTICLE_HEIGHT / 2);
+    } else {
+      this.part = createShape(ELLIPSE, x, y, (float)ps.PARTICLE_WIDTH, (float)ps.PARTICLE_HEIGHT);
+    }
     this.part.setVisible(false);
     addEdge();
   }
@@ -115,9 +119,9 @@ class Particle {
   
   public void computeColor(double timeElapsed) {
     if (ps.mode == 2 && timeElapsed < 0) {
-      this.r = 255;
-      this.g = 0;
-      this.b = 0;
+      this.r = 0;
+      this.g = 255;
+      this.b = 255;
     } else {
       this.r = max((int) (rCoef[0]*timeElapsed + rCoef[1]), 0);
       this.g = max((int) (gCoef[0]*timeElapsed + gCoef[1]), 0);
