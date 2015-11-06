@@ -88,6 +88,8 @@ class Particle {
     setY(y);
     if (generation > 0 && ps.generationCount.get(generation - 1) > 50) {
       this.part = createShape(ELLIPSE, x, y, (float) ps.PARTICLE_WIDTH / 2, (float)ps.PARTICLE_HEIGHT / 2);
+    } else if (generation > 0 && ps.generationCount.get(generation - 1) > 100) {
+      this.part = createShape(ELLIPSE, x, y, (float) ps.PARTICLE_WIDTH / 5, (float)ps.PARTICLE_HEIGHT / 5);
     } else {
       this.part = createShape(ELLIPSE, x, y, (float)ps.PARTICLE_WIDTH, (float)ps.PARTICLE_HEIGHT);
     }
