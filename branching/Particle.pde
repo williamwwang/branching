@@ -49,11 +49,14 @@ class Particle {
     this.initialLifetime = lifetime;
     this.lifetime = lifetime;
     this.birthTime = birthTime;
+    // MODE
     if (ps.mode == 1) {
       this.deathTime = birthTime + lifetime;
-    } else if (ps.mode == 2) {
+    } else if (ps.mode == 2 || ps.mode == 4) {
       if (parent == null) this.deathTime = birthTime + lifetime;
       else this.deathTime = parent.deathTime + lifetime;
+    } else if (ps.mode == 3) {
+      this.deathTime = birthTime + lifetime;
     }
     //  println("Death Time: " + deathTime);
     this.parent = parent;
@@ -120,7 +123,8 @@ class Particle {
   }
   
   public void computeColor(double timeElapsed) {
-    if (ps.mode == 2 && timeElapsed < 0) {
+    // MODE
+    if ((ps.mode == 2 || ps.mode == 4) && timeElapsed < 0) {
       this.r = 0;
       this.g = 255;
       this.b = 255;
@@ -144,7 +148,13 @@ class Particle {
     //float newY = this.generation * 2;
     while (birthTimes.peek() != null) {
       //Particle p = new Particle(5, birthTimes.poll(), this, newX, newY);
-      float time = ps.rand.sample();
+      float time = 0;
+      // MODE
+      if (ps.mode == 3 || ps.mode == 4) {
+        time = random(this.initialLifetime);
+      } else {
+        time = ps.rand.sample();
+      }
       Particle p = new Particle(ps, time, birthTimes.poll(), this);
       children.add(p);
     }
@@ -155,7 +165,8 @@ class Particle {
     Queue<Float> birthTimes = new LinkedList<Float>();
     RNG waitingTimes = new RNG(new ExponentialDistribution(ps.lambda));
     float waitingTime = waitingTimes.sample();
-    while (waitingTime <= this.initialLifetime) {
+    // while(waitingTime <= this.lifetime) {// Causes different pattern, incorrect for the birth and assassination process
+    while (waitingTime <= this.deathTime-this.birthTime) {
       birthTimes.add(this.birthTime + waitingTime);
       waitingTime += waitingTimes.sample();
     }
@@ -177,7 +188,8 @@ class Particle {
       this.edge.setVisible(false);
       return;
     }
-    if (ps.mode == 2) {
+    // MODE
+    if (ps.mode == 2 || ps.mode == 4) {
       float timeElapsed = 0;
       if (parent == null) timeElapsed = millis()*ps.TSCALE;
       else {

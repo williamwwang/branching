@@ -36,7 +36,7 @@ public class ParticleSystem {
   // Vertical padding
   double VPAD = 5;
   // Vertical space of connections (edges)
-  double EDGE_HEIGHT = 20;
+  double EDGE_HEIGHT = 30;
   // Horizontal scaling factor: hspace_gen{x+1} = hspace_gen{x}*HSCALE
   //double HSCALE = 1.2;
   // Time scaling factor: .001 (millis -> sec)
@@ -45,9 +45,11 @@ public class ParticleSystem {
   // Modes:
   // 1: Galton-Watson
   // 2: Birth-and-Assassination
+  // 3: Conditioning (T_0 = c, T_x ~ Unif(0, T_{x-1}) (x > 0))
+  // 4: Conditioning with birth-and-assassination
   int mode;
   
-  public ParticleSystem(float lambda, Distribution dist, int mode) {
+  public ParticleSystem(float lambda, Distribution dist, int mode, float constant) {
     // Possibly move this to branching
     ellipseMode(CENTER);
     colorMode(RGB, 255, 255, 255);
@@ -65,7 +67,13 @@ public class ParticleSystem {
     // Create the generation queue
     generationQueue = new ArrayList<Queue<Particle>>();
     Queue<Particle> firstGen = new LinkedList<Particle>();
-    Particle p = new Particle(this, rand.sample(), millis() * TSCALE, null);
+    Particle p = null;
+    // MODE
+    if (mode == 3 || mode == 4) {
+      p = new Particle(this, constant, millis() * TSCALE, null);
+    } else {
+      p = new Particle(this, rand.sample(), millis() * TSCALE, null);
+    }
     p.setCoordinates((float) displayWidth / 2, (float) VPAD + (float) PARTICLE_HEIGHT / 2);
     firstGen.add(p);
     println(p.lifetime);
