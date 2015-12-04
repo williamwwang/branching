@@ -1,7 +1,7 @@
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.LinkedList;
-import java.util.Comparator;
+//import java.util.ArrayList;
+//import java.util.Queue;
+//import java.util.LinkedList;
+//import java.util.Comparator;
 class Particle {
   // Constant
   public float initialLifetime;
@@ -22,7 +22,7 @@ class Particle {
   // Parent particle, needs this to keep track of when it is at risk
   public Particle parent;
   // Children to process
-  public Queue<Particle> children;
+  public QueueLite<Particle> children;
   // number of children
   public int numChildren;
   // Coordinates
@@ -138,8 +138,8 @@ class Particle {
   public void generateChildren() {
     // Probably not necessary - EDIT: necessary
     this.hasChildren = true;
-    Queue<Float> birthTimes = generateChildrenTimes();
-    children = new LinkedList<Particle>();
+    QueueLite<Float> birthTimes = generateChildrenTimes();
+    children = new LinkedListLite<Particle>();
     int numChildren = birthTimes.size();
     // needs constants
     //float newX = this.generation * 5;
@@ -161,8 +161,8 @@ class Particle {
     numChildren = children.size();
   }
 
-  public Queue<Float> generateChildrenTimes() {
-    Queue<Float> birthTimes = new LinkedList<Float>();
+  public QueueLite<Float> generateChildrenTimes() {
+    QueueLite<Float> birthTimes = new LinkedListLite<Float>();
     RNG waitingTimes = new RNG(new ExponentialDistribution(ps.lambda));
     float waitingTime = waitingTimes.sample();
     // while(waitingTime <= this.lifetime) {// Causes different pattern, incorrect for the birth and assassination process

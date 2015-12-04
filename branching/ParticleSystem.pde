@@ -1,7 +1,7 @@
-import java.util.Queue;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Comparator;
+//import java.util.Queue;
+//import java.util.LinkedList;
+//import java.util.PriorityQueue;
+//import java.util.Comparator;
 
 public class ParticleSystem {
   public float lambda;
@@ -12,10 +12,10 @@ public class ParticleSystem {
   public boolean result;
   // DO NOT CHANGE WHILE ITERATING
   // ArrayList<Particle> particles;
-  Queue<Particle> particles;
+  QueueLite<Particle> particles;
   
   // DO NOT ITERATE THROUGH ME UNTIL UPDATE
-  Queue<Particle> newParticles;
+  QueueLite<Particle> newParticles;
   
   PShape particleShape;
   // Maybe have an Exponential RNG?
@@ -26,9 +26,13 @@ public class ParticleSystem {
   ArrayList<Integer> generationCount;
   
   // i-th element is count in generation i + 1 (0-indexed -> 1-indexed)
-  ArrayList<Queue<Particle>> generationQueue;
+  ArrayList<QueueLite<Particle>> generationQueue;
 
   /* Constants */
+  // Height of screen
+  double simHeight;
+  // Width of screen
+  double simWidth;
   // Height of particle
   double PARTICLE_HEIGHT = 10;
   // Width of particle
@@ -49,24 +53,26 @@ public class ParticleSystem {
   // 4: Conditioning with birth-and-assassination
   int mode;
   
-  public ParticleSystem(float lambda, Distribution dist, int mode, float constant) {
+  public ParticleSystem(float lambda, Distribution dist, int mode, float constant, double simWidth, double simHeight) {
     // Possibly move this to branching
     ellipseMode(CENTER);
     colorMode(RGB, 255, 255, 255);
     this.lambda = lambda;
     this.rand = new RNG(dist);
     this.mode = mode;
+    this.simWidth = simWidth;
+    this.simHeight = simHeight;
     // particles = new ArrayList<Particle>();
-    particles = new PriorityQueue<Particle>(100, new ParticleDeathComparator());
+    particles = new PriorityQueueLite<Particle>(100, new ParticleDeathComparator());
     particleShape = createShape(PShape.GROUP);
     
     generationCount = new ArrayList<Integer>();
     generationCount.add(1);
     
-    newParticles = new LinkedList<Particle>();
+    newParticles = new LinkedListLite<Particle>();
     // Create the generation queue
-    generationQueue = new ArrayList<Queue<Particle>>();
-    Queue<Particle> firstGen = new LinkedList<Particle>();
+    generationQueue = new ArrayList<QueueLite<Particle>>();
+    QueueLite<Particle> firstGen = new LinkedListLite<Particle>();
     Particle p = null;
     // MODE
     if (mode == 3 || mode == 4) {
@@ -74,9 +80,9 @@ public class ParticleSystem {
     } else {
       p = new Particle(this, rand.sample(), millis() * TSCALE, null);
     }
-    p.setCoordinates((float) displayWidth / 2, (float) VPAD + (float) PARTICLE_HEIGHT / 2);
+    p.setCoordinates((float) simWidth / 2, (float) VPAD + (float) PARTICLE_HEIGHT / 2);
     firstGen.add(p);
-    println(p.lifetime);
+    println("First particle lifetime: " + p.lifetime);
     generationQueue.add(0, firstGen);
     particles.add(p);
     particleShape.addChild(p.getShape());
@@ -85,15 +91,17 @@ public class ParticleSystem {
   // Creates the i-th generation, 1-indexed.
   public void createGeneration(int i) {
     println("Generation: " + i);
-    Queue<Particle> previousGeneration = generationQueue.get(i - 2);
+    QueueLite<Particle> previousGeneration = generationQueue.get(i - 2);
     if (previousGeneration == null) {
       return;
     }
-    Queue<Particle> nextGeneration = new LinkedList<Particle>();
+    QueueLite<Particle> nextGeneration = new LinkedListLite<Particle>();
     Particle p = previousGeneration.poll();
     while (p != null) {
       p.generateChildren();
-      for (Particle child : p.children) {
+      IteratorLite<Particle> iter = p.children.iterator();
+      while (iter.hasNext()) {
+        Particle child = iter.next();
         nextGeneration.add(child);
       }
       p = previousGeneration.poll();
@@ -109,26 +117,34 @@ public class ParticleSystem {
     // double totalSpace = displayWidth / ps.generationCount.get(this.generation);
     // double spacePerChild = totalSpace / this.numChildren;
     println("Number in generation:" + generationCount.get(i-1));
-    double spacePerChild = displayWidth / (generationCount.get(i - 1) + 1);
+    double spacePerChild = simWidth / (generationCount.get(i - 1) + 1);
     if (spacePerChild == 0) maxCapacityReached = true;
     // x-coordinates
     float x = 0;
     // y-coordinates
     float y = (float) (VPAD + (i - 1) * (PARTICLE_HEIGHT + EDGE_HEIGHT) + PARTICLE_HEIGHT / (float) 2);
-    Queue<Particle> thisGeneration = generationQueue.get(i - 1);
-    for (Particle p : thisGeneration) {
+    if (y > simHeight) maxCapacityReached = true;
+    QueueLite<Particle> thisGeneration = generationQueue.get(i - 1);
+    IteratorLite<Particle> iter = thisGeneration.iterator();
+    while (iter.hasNext()) {
+      Particle p = iter.next();
       x += spacePerChild;
-      //p.setX(x);
-      //p.setY(y);
       p.setCoordinates(x, y);
-      //println(p);
     }
   }
   
   void update() {
-    for (Particle part: particles) {
+    //println("Iter has next");
+    //for (Particle part: particles) {
+    //  part.update();
+    //}
+
+    IteratorLite<Particle> iter = particles.iterator();
+    while (iter.hasNext()) {
+      Particle part = iter.next();
       part.update();
     }
+
     Particle p = particles.peek();
     float currTime = millis() * TSCALE;
     /*if (p != null) {
@@ -170,9 +186,8 @@ public class ParticleSystem {
     shape(particleShape);
   }
   
-  class ParticleDeathComparator implements Comparator<Particle> {
+  class ParticleDeathComparator implements ComparatorLite<Particle> {
     // p1 < p2 if p1 death time is after p2 death time
-    @Override
     public int compare(Particle p1, Particle p2) {
       if (p1.deathTime < p2.deathTime) return -1;
       if (p1.deathTime > p2.deathTime) return 1;
