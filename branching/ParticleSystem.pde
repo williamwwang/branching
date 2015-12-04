@@ -17,7 +17,7 @@ public class ParticleSystem {
   // DO NOT ITERATE THROUGH ME UNTIL UPDATE
   QueueLite<Particle> newParticles;
   
-  PShape particleShape;
+  //PShape particleShape;
   // Maybe have an Exponential RNG?
   // Generates random lifetimes
   RNG rand;
@@ -64,7 +64,7 @@ public class ParticleSystem {
     this.simHeight = simHeight;
     // particles = new ArrayList<Particle>();
     particles = new PriorityQueueLite<Particle>(100, new ParticleDeathComparator());
-    particleShape = createShape(PShape.GROUP);
+    //particleShape = createShape(PShape.GROUP);
     
     generationCount = new ArrayList<Integer>();
     generationCount.add(1);
@@ -85,7 +85,7 @@ public class ParticleSystem {
     println("First particle lifetime: " + p.lifetime);
     generationQueue.add(0, firstGen);
     particles.add(p);
-    particleShape.addChild(p.getShape());
+    //particleShape.addChild(p.getShape());
   }
   
   // Creates the i-th generation, 1-indexed.
@@ -175,15 +175,21 @@ public class ParticleSystem {
     p = newParticles.poll();
     while (p != null) {
       particles.add(p);
-      particleShape.addChild(p.getShape());
-      particleShape.addChild(p.edge);
+      //particleShape.addChild(p.getShape());
+      //particleShape.addChild(p.edge);
       p = newParticles.poll();
     }
 
   }
   
   void display() {
-    shape(particleShape);
+    // shape(particleShape);
+    // TODO: loop through all particles and draw manually given their attributes
+    IteratorLite<Particle> iter = particles.iterator();
+    while (iter.hasNext()) {
+      Particle part = iter.next();
+      part.display();
+    }
   }
   
   class ParticleDeathComparator implements ComparatorLite<Particle> {

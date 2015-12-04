@@ -36,8 +36,11 @@ class Particle {
   public int b = 0;
   
   // PShape graphics
-  PShape part;
-  PShape edge;
+  //PShape part;
+  //PShape edge;
+  
+  boolean partVisible = false;
+  boolean edgeVisible = false;
   // Can contribute towards particle system fields
   ParticleSystem ps;
   
@@ -64,7 +67,7 @@ class Particle {
     this.rCoef = new float[]{(float) -r/ lifetime, r};
     this.gCoef = new float[]{(float) -g/ lifetime, g};
     this.bCoef = new float[]{(float) -b/ lifetime, b};
-    this.part = null;
+    //this.part = null;
     //this.part = createShape();
     if (parent == null) {
       this.generation = 1;
@@ -89,33 +92,37 @@ class Particle {
   public void setCoordinates(float x, float y) {
     setX(x);
     setY(y);
-    if (generation > 0 && ps.generationCount.get(generation - 1) > 50) {
+    /*if (generation > 0 && ps.generationCount.get(generation - 1) > 50) {
       this.part = createShape(ELLIPSE, x, y, (float) ps.PARTICLE_WIDTH / 2, (float)ps.PARTICLE_HEIGHT / 2);
     } else if (generation > 0 && ps.generationCount.get(generation - 1) > 100) {
       this.part = createShape(ELLIPSE, x, y, (float) ps.PARTICLE_WIDTH / 5, (float)ps.PARTICLE_HEIGHT / 5);
     } else {
       this.part = createShape(ELLIPSE, x, y, (float)ps.PARTICLE_WIDTH, (float)ps.PARTICLE_HEIGHT);
-    }
-    this.part.setVisible(false);
+    }*/
+    //this.part.setVisible(false);
+    partVisible = false;
     addEdge();
   }
   
   public void addEdge() {
-    edge = createShape();
+    /*edge = createShape();
     edge.beginShape();
     if (parent != null) {
       edge.vertex(parent.x, parent.y);
     }
     edge.vertex(x, y);
-    edge.endShape(CLOSE);
-    edge.setVisible(false);
+    edge.endShape(CLOSE);*/
+    //edge.setVisible(false);
+    edgeVisible = false;
   }
   
   public boolean hasShape() {
-    return this.part != null;
+    //return this.part != null;
+    return false;
   }
   public PShape getShape() {
-    return this.part;
+    //return this.part;
+    return null;
   }
   
   public boolean isDead() {
@@ -177,15 +184,19 @@ class Particle {
     // TODO: change the timings, computer color, set this to alive when it is time
     if (!born && millis()*ps.TSCALE >= this.birthTime) {
       this.setBorn();
-      this.part.setVisible(true);
-      this.edge.setVisible(true);
+      //this.part.setVisible(true);
+      //this.edge.setVisible(true);
+      partVisible = true;
+      edgeVisible = true;
     } else if (!born || isDead()) {
       /*this.part.setStroke(color(0, 0, 0));
       this.part.setFill(color(0, 0, 0));
       this.edge.setStroke(color(0, 0, 0));
       this.edge.setFill(color(0, 0, 0));*/
-      this.part.setVisible(false);
-      this.edge.setVisible(false);
+      //this.part.setVisible(false);
+      //this.edge.setVisible(false);
+      partVisible = false;
+      edgeVisible = false;
       return;
     }
     // MODE
@@ -206,14 +217,15 @@ class Particle {
       lifetime = initialLifetime - timeElapsed;
       computeColor(timeElapsed);
     }
-    this.part.setStroke(color(r, g, b));
-    this.part.setFill(color(r, g, b));
+    //this.part.setStroke(color(r, g, b));
+    //this.part.setFill(color(r, g, b));
     if (parent == null) {
-      this.edge.setStroke(color(0, 0, 0));
-      this.edge.setFill(color(0, 0, 0));
+      //this.edge.setStroke(color(0, 0, 0));
+      //this.edge.setFill(color(0, 0, 0));
+      edgeVisible = false;
     } else {
-      this.edge.setStroke(color(parent.r, parent.g, parent.b));
-      this.edge.setFill(color(parent.r, parent.g, parent.b));
+      //this.edge.setStroke(color(parent.r, parent.g, parent.b));
+      //this.edge.setFill(color(parent.r, parent.g, parent.b));
     }
   }
   
@@ -225,15 +237,39 @@ class Particle {
   }
   
   public void die() {
-    this.part.setVisible(false);
-    this.edge.setVisible(false);
+    //this.part.setVisible(false);
+    //this.edge.setVisible(false);
+    partVisible = false;
+    edgeVisible = false;
   }
+
   public void display() {
     if (isDead()) {
       return;
     }
-    fill(this.r, this.g, this.b);
-    ellipse(x, y, 50, 50);
+    //fill(this.r, this.g, this.b);
+    //ellipse(x, y, 50, 50);
+    if (partVisible) {
+      stroke(r, g, b);
+      fill(r, g, b);
+      if (generation > 0 && ps.generationCount.get(generation - 1) > 50) {
+        ellipse(x, y, (float) ps.PARTICLE_WIDTH / 2, (float)ps.PARTICLE_HEIGHT / 2);
+      } else if (generation > 0 && ps.generationCount.get(generation - 1) > 100) {
+        ellipse(x, y, (float) ps.PARTICLE_WIDTH / 5, (float)ps.PARTICLE_HEIGHT / 5);
+      } else {
+        ellipse(x, y, (float)ps.PARTICLE_WIDTH, (float)ps.PARTICLE_HEIGHT);
+      }
+    }
+    if (edgeVisible) {
+      beginShape();
+      stroke(parent.r, parent.g, parent.b);
+      fill(parent.r, parent.g, parent.b);
+      if (parent != null) {
+        vertex(parent.x, parent.y);
+      }
+      vertex(x, y);
+      endShape();
+    }
   }
   
   public String toString() {
