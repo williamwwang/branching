@@ -33,7 +33,7 @@ interface QueueLite<E> {
   E peek();
   E poll();
   IteratorLite<E> iterator();
-  int size();
+  int getSize();
 }
 
 interface IterableLite<E> {
@@ -90,9 +90,16 @@ class PriorityQueueLite<E> implements QueueLite<E>, IterableLite<E> {
     if (newCapacity < minCapacity)
       newCapacity = minCapacity;
     Object[] copy = (E[]) new Object[newCapacity];
-    System.arraycopy(queue, 0, copy, 0, min(queue.length, newCapacity));
+    arrayCopy(queue, 0, copy, 0, min(queue.length, newCapacity));
     queue =(E[]) copy;
   }
+  
+  private void arrayCopy(Object[] x, int idx1, Object[] y, int idx2, int n) {
+    while (n-- > 0) {
+      y[idx2++] = x[idx1++];
+    }
+  }
+  
   private void siftUp(int k, E x) {
     siftUpUsingComparator(k, x);
   }
@@ -159,7 +166,7 @@ class PriorityQueueLite<E> implements QueueLite<E>, IterableLite<E> {
     return result;
   }
   
-  public int size() {
+  public int getSize() {
     return size;
   }
   
@@ -208,7 +215,7 @@ class LinkedListLite<E> implements QueueLite<E>, IterableLite<E> {
     return result;
   }
 
-  public int size() {
+  public int getSize() {
     return size;
   }
   

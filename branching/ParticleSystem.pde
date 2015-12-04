@@ -108,7 +108,7 @@ public class ParticleSystem {
       p = previousGeneration.poll();
     }
     generationQueue.add(i - 1, nextGeneration);
-    generationCount.add(nextGeneration.size());
+    generationCount.add(nextGeneration.getSize());
     setChildCoordinates(i);
   }
   
@@ -158,13 +158,13 @@ public class ParticleSystem {
       p = particles.peek();
     }
     // Add all new particles
-    if (particles.size() == 0) {
+    if (particles.getSize() == 0) {
       simulationDone = true;
       if (maxCapacityReached) result = true;
       else result = false;
     }
-    if (particles.size() >= MAX_CAPACITY) {
-      println("Max capacity reached! " + particles.size());
+    if (particles.getSize() >= MAX_CAPACITY) {
+      println("Max capacity reached! " + particles.getSize());
       maxCapacityReached = true;
       return;
     }

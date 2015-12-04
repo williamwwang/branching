@@ -147,7 +147,7 @@ class Particle {
     this.hasChildren = true;
     QueueLite<FloatLite> birthTimes = generateChildrenTimes();
     children = new LinkedListLite<Particle>();
-    int numChildren = birthTimes.size();
+    int numChildren = birthTimes.getSize();
     // needs constants
     //float newX = this.generation * 5;
     // Each particle child space can take a certain capacity proportional to the number of particles in its generation
@@ -165,7 +165,7 @@ class Particle {
       Particle p = new Particle(ps, time, birthTimes.poll().floatValue(), this);
       children.add(p);
     }
-    numChildren = children.size();
+    numChildren = children.getSize();
   }
 
   public QueueLite<FloatLite> generateChildrenTimes() {

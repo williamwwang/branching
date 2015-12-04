@@ -11,6 +11,10 @@ float lambdaKilling = .4;
  * Cannot use external libraries, including java.util
  * Cannot use displayWidth or displayHeight variables
  * Cannot use the tag @Override
+ * Cannot use Float wrapper
+ * Must typecast redundantly to avoid errors
+ * Must be careful using names of functions:
+ * Cannot make another size() function for a class
  */
 
 // Interesting parameters:
@@ -36,11 +40,11 @@ void setup() {
 void draw () {
   background(0);
   ps.update();
-  //println("Got here!");
   ps.display();
   if (ps.simulationDone) {
     if (ps.result) println("Survival");
     else println("Extinction at generation " + (ps.generationCount.size() - 1));
-    exit();
+    //exit();
+    noLoop();
   }
 }
