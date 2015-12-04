@@ -145,7 +145,7 @@ class Particle {
   public void generateChildren() {
     // Probably not necessary - EDIT: necessary
     this.hasChildren = true;
-    QueueLite<Float> birthTimes = generateChildrenTimes();
+    QueueLite<FloatLite> birthTimes = generateChildrenTimes();
     children = new LinkedListLite<Particle>();
     int numChildren = birthTimes.size();
     // needs constants
@@ -160,22 +160,22 @@ class Particle {
       if (ps.mode == 3 || ps.mode == 4) {
         time = random(this.initialLifetime);
       } else {
-        time = ps.rand.sample();
+        time = ps.rand.sample().floatValue();
       }
-      Particle p = new Particle(ps, time, birthTimes.poll(), this);
+      Particle p = new Particle(ps, time, birthTimes.poll().floatValue(), this);
       children.add(p);
     }
     numChildren = children.size();
   }
 
-  public QueueLite<Float> generateChildrenTimes() {
-    QueueLite<Float> birthTimes = new LinkedListLite<Float>();
+  public QueueLite<FloatLite> generateChildrenTimes() {
+    QueueLite<FloatLite> birthTimes = new LinkedListLite<FloatLite>();
     RNG waitingTimes = new RNG(new ExponentialDistribution(ps.lambda));
-    float waitingTime = waitingTimes.sample();
+    float waitingTime = waitingTimes.sample().floatValue();
     // while(waitingTime <= this.lifetime) {// Causes different pattern, incorrect for the birth and assassination process
     while (waitingTime <= this.deathTime-this.birthTime) {
-      birthTimes.add(this.birthTime + waitingTime);
-      waitingTime += waitingTimes.sample();
+      birthTimes.add(new FloatLite(this.birthTime + waitingTime));
+      waitingTime += waitingTimes.sample().floatValue();
     }
     return birthTimes;
   }

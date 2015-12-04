@@ -78,7 +78,7 @@ public class ParticleSystem {
     if (mode == 3 || mode == 4) {
       p = new Particle(this, constant, millis() * TSCALE, null);
     } else {
-      p = new Particle(this, rand.sample(), millis() * TSCALE, null);
+      p = new Particle(this, rand.sample().floatValue(), millis() * TSCALE, null);
     }
     p.setCoordinates((float) simWidth / 2, (float) VPAD + (float) PARTICLE_HEIGHT / 2);
     firstGen.add(p);

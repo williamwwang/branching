@@ -12,7 +12,7 @@ public class RNG {
     this.invcdf = dist.invcdf;
   }
   
-  public Float sample() {
+  public FloatLite sample() {
     if (invcdf != null) {
       return inverseCDFTransform(1).get(0);
     }
@@ -21,7 +21,7 @@ public class RNG {
     }
     return null;
   }
-  public ArrayList<Float> sample(int n) {
+  public ArrayList<FloatLite> sample(int n) {
     // Default to inverse cdf transform
     if (invcdf != null) {
       return inverseCDFTransform(n);
@@ -32,7 +32,7 @@ public class RNG {
     return null;
   }
   
-  public ArrayList<Float> sample(int n, String method) {
+  public ArrayList<FloatLite> sample(int n, String method) {
     if (method.equals("inv")) {
       return inverseCDFTransform(n);
     } else {
@@ -40,17 +40,17 @@ public class RNG {
     }
   }
   
-  public ArrayList<Float> inverseCDFTransform(int n) {
-    ArrayList<Float> sample = new ArrayList<Float>(n);
+  public ArrayList<FloatLite> inverseCDFTransform(int n) {
+    ArrayList<FloatLite> sample = new ArrayList<FloatLite>(n);
     for (int i = 0; i < n; i++) {
       float rand = random(1);
       float element = invcdf.apply(rand);
-      sample.add(element);
+      sample.add(new FloatLite(element));
     }
     return sample;
   }
   
-  public ArrayList<Float> rejectionSample(int n) {
+  public ArrayList<FloatLite> rejectionSample(int n) {
     return null;
   }
   

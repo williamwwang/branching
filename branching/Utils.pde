@@ -14,6 +14,16 @@ abstract class Distribution {
  * These are simple versions of data structures from java.util with only the required methods
  */
 
+class FloatLite {
+  float val;
+  public FloatLite(float val) {
+    this.val = val;
+  }
+  float floatValue() {
+    return val;
+  }
+}
+
 interface ComparatorLite<T> {
   int compare(T o1, T o2);
 }
