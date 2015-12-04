@@ -64,9 +64,9 @@ class Particle {
     //  println("Death Time: " + deathTime);
     this.parent = parent;
     this.canDie = false;
-    this.rCoef = new float[]{(float) -r/ lifetime, r};
-    this.gCoef = new float[]{(float) -g/ lifetime, g};
-    this.bCoef = new float[]{(float) -b/ lifetime, b};
+    this.rCoef = new float[]{(float) (-r/ lifetime), r};
+    this.gCoef = new float[]{(float) (-g/ lifetime), g};
+    this.bCoef = new float[]{(float) (-b/ lifetime), b};
     //this.part = null;
     //this.part = createShape();
     if (parent == null) {
@@ -253,11 +253,11 @@ class Particle {
       stroke(r, g, b);
       fill(r, g, b);
       if (generation > 0 && ps.generationCount.get(generation - 1) > 50) {
-        ellipse(x, y, (float) ps.PARTICLE_WIDTH / 2, (float)ps.PARTICLE_HEIGHT / 2);
+        ellipse(x, y, (float) ((float) ps.PARTICLE_WIDTH / 2), (float) ((float) ps.PARTICLE_HEIGHT / 2));
       } else if (generation > 0 && ps.generationCount.get(generation - 1) > 100) {
-        ellipse(x, y, (float) ps.PARTICLE_WIDTH / 5, (float)ps.PARTICLE_HEIGHT / 5);
+        ellipse(x, y, (float) ((float) ps.PARTICLE_WIDTH / 5), (float) ((float) ps.PARTICLE_HEIGHT / 5));
       } else {
-        ellipse(x, y, (float)ps.PARTICLE_WIDTH, (float)ps.PARTICLE_HEIGHT);
+        ellipse(x, y, (float) ps.PARTICLE_WIDTH, (float) ps.PARTICLE_HEIGHT);
       }
     }
     if (edgeVisible) {

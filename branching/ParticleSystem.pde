@@ -55,6 +55,7 @@ public class ParticleSystem {
   
   public ParticleSystem(float lambda, Distribution dist, int mode, float constant, double simWidth, double simHeight) {
     // Possibly move this to branching
+
     ellipseMode(CENTER);
     colorMode(RGB, 255, 255, 255);
     this.lambda = lambda;
@@ -80,7 +81,7 @@ public class ParticleSystem {
     } else {
       p = new Particle(this, rand.sample().floatValue(), millis() * TSCALE, null);
     }
-    p.setCoordinates((float) simWidth / 2, (float) VPAD + (float) PARTICLE_HEIGHT / 2);
+    p.setCoordinates((float) ((float) simWidth / 2), (float) VPAD + (float) ((float) PARTICLE_HEIGHT / 2));
     firstGen.add(p);
     println("First particle lifetime: " + p.lifetime);
     generationQueue.add(0, firstGen);
@@ -122,7 +123,7 @@ public class ParticleSystem {
     // x-coordinates
     float x = 0;
     // y-coordinates
-    float y = (float) (VPAD + (i - 1) * (PARTICLE_HEIGHT + EDGE_HEIGHT) + PARTICLE_HEIGHT / (float) 2);
+    float y = (float) (VPAD + (i - 1) * (PARTICLE_HEIGHT + EDGE_HEIGHT) + (float) PARTICLE_HEIGHT / 2);
     if (y > simHeight) maxCapacityReached = true;
     QueueLite<Particle> thisGeneration = generationQueue.get(i - 1);
     IteratorLite<Particle> iter = thisGeneration.iterator();
