@@ -12,11 +12,11 @@
     <input type = "radio" name = "mode" id = "mode" value = "1" checked>Galton-Watson<br>
     <input type = "radio" name = "mode" id = "mode" value = "2">Birth-and-Assassination<br>
     <input type = "radio" name = "mode" id = "mode" value = "3">Conditional-Uniform<br>
-    <input type = "radio" name = "mode" id = "mode" value = "4">Conditional-Birth-And-Assassination<br>
+    <input type = "radio" name = "mode" id = "mode" value = "4">Conditional-Birth-and-Assassination<br>
     -------------------------------------------------<br>
     Birth Rate: <input type = "text" name = "lambda" id = "lambda" value = "" style = "width: 30px"><br>
     Killing Distribution:<br>
-    Constant (used for conditionals, ignored otherwise): <input type = "text" name = "conditional_constant" id = "conditional_constant" value = "" style = "width: 30px"><br>
+    Initial Lifetime (used for conditionals, ignored otherwise): <input type = "text" name = "conditional_constant" id = "conditional_constant" value = "" style = "width: 30px"><br>
     <input type = "radio" name = "dist" id = "dist" value = "unif">Uniform(a, b); a = <input
     type = "text" name = "unif_a" id = "unif_a" value = "" style = "width: 30px">, b = <input type = "text" name = "unif_b" id = "unif_b" value = "" style = "width: 30px"><br>
     <input type = "radio" name = "dist" id = "dist" value = "exp">Exponential(lambda); lambda = <input type = "text" name = "exp_lambda" id = "exp_lambda" value = "" style = "width: 30px"><br>
@@ -69,6 +69,10 @@
           var params = []
           if (branchingType == '3' || branchingType == '4') {
             if (isNaN(constant)) {
+              writeToLog(incomplete);
+              invalid = true;
+            }
+            if (isNaN(branchingRate)) {
               writeToLog(incomplete);
               invalid = true;
             }
