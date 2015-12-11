@@ -7,22 +7,28 @@
     <h1>Branching Process Simulation</h1>
     <canvas id = "branching" data-processing-sources="branching/Distributions.pde branching/Particle.pde branching/ParticleSystem.pde branching/RNG.pde branching/Utils.pde branching/branching.pde"></canvas><br>
     Process Type:<br>
-    <input type = "radio" name = "mode" value = "1" checked>Galton-Watson<br>
-    <input type = "radio" name = "mode" value = "2">Birth-and-Assassination<br>
-    <input type = "radio" name = "mode" value = "3">Conditional-Uniform<br>
-    <input type = "radio" name = "mode" value = "4">Conditional-Birth-And-Assassination<br>
+    <input type = "radio" name = "mode" id = "mode" value = "1" checked>Galton-Watson<br>
+    <input type = "radio" name = "mode" id = "mode" value = "2">Birth-and-Assassination<br>
+    <input type = "radio" name = "mode" id = "mode" value = "3">Conditional-Uniform<br>
+    <input type = "radio" name = "mode" id = "mode" value = "4">Conditional-Birth-And-Assassination<br>
     -------------------------------------------------<br>
-    Birth Rate: <input type = "text" name = "lambda" style = "width: 30px"><br>
+    Birth Rate: <input type = "text" name = "lambda" id = "lambda" value = "" style = "width: 30px"><br>
     Killing Distribution:<br>
-    <input type = "radio" name = "dist" value = "unif" checked>Uniform(a, b); a = <input
-    type = "text" name = "unif_a" style = "width: 30px">, b = <input type = "text" name = "unif_b" style = "width: 30px"><br>
-    <input type = "radio" name = "dist" value = "exp">Exponential(lambda); lambda = <input type = "text" name = "exp_lambda" style = "width: 30px"><br>
-    <input type = "radio" name = "dist" value = "cubed_cdf">F(x) = x^3 on [0, 1]<br>
+    Constant (used for conditionals, ignored otherwise): <input type = "text" name = "conditional_constant" id = "conditional_constant" value = "" style = "width: 30px"><br>
+    <input type = "radio" name = "dist" id = "dist" value = "unif">Uniform(a, b); a = <input
+    type = "text" name = "unif_a" id = "unif_a" value = "" style = "width: 30px">, b = <input type = "text" name = "unif_b" id = "unif_b" value = "" style = "width: 30px"><br>
+    <input type = "radio" name = "dist" id = "dist" value = "exp">Exponential(lambda); lambda = <input type = "text" name = "exp_lambda" id = "exp_lambda" value = "" style = "width: 30px"><br>
+    <input type = "radio" name = "dist" id = "dist" value = "cubed_cdf">F(x) = x^3 on [0, 1]<br>
     -------------------------------------------------<br>
+
     <button onclick = "startSketch();">Start</button>
+    <button onclick = "resetSketch();">Reset</button>
 
     <script type = "application/javascript">
       var processingInstance;
+      var incomplete = 'Some required fields are incomplete.';
+      var invalid = false;
+      var sketchRunning = false;
 
       function startSketch() {
         switchSketchState(true);
@@ -32,13 +38,71 @@
         switchSketchState(false);
       }
 
+      function getRadioByName(name) {
+        var radios = document.getElementsByName(name);
+
+        for (var i = 0, length = radios.length; i < length; i++) {
+          if (radios[i].checked) {
+          // do whatever you want with the checked radio
+            return radios[i].value;
+          }
+        }        
+      }
+
       function switchSketchState(on) {
+        if (sketchRunning) return;
         if (!processingInstance) {
           processingInstance = Processing.getInstanceById('branching');
         }
         if (on) {
-          processingInstance.startSketch();
+
+          var branchingType = getRadioByName('mode');
+          var branchingRate = parseFloat(document.getElementById('lambda').value);
+          var constant = parseFloat(document.getElementById('conditional_constant').value);
+          var dist = getRadioByName('dist');
+          var params = []
+          if (branchingType == '3' || branchingType == '4') {
+            if (isNaN(constant)) {
+              //writeToLog(incomplete);
+              invalid = true;
+            }
+          } else {
+            constant = 0;
+            if (dist == 'unif') {
+              params.push(parseFloat(document.getElementById('unif_a').value));
+              params.push(parseFloat(document.getElementById('unif_b').value));
+              if (isNaN(params[0]) || isNaN(params[1])) {
+                //writeToLog(incomplete);
+                invalid = true;
+              }
+            }
+            if (dist == 'exp') {
+              params.push(parseFloat(document.getElementById('exp_lambda').value));
+              if (isNaN(params[0])) {
+                //writeToLog(incomplete);
+                invalid = true;
+              }
+            }
+          }
+          console.log(branchingType);
+                    console.log(branchingRate);
+                              console.log(constant);
+                                        console.log(dist);
+//                                                  console.log(branchingType)
+          if (!invalid) {
+            console.log(branchingType);
+            sketchRunning = true;
+            processingInstance.startSketch(dist, branchingRate, parseInt(branchingType), constant, params);
+          } else {
+            invalid = false;
+          }
         }
+      }
+
+      function resetSketch() {
+        if (!processingInstance || !sketchRunning) return;
+        processingInstance.resetSketch();
+        sketchRunning = false;
       }
     </script>
   </body>
