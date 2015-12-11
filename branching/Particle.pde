@@ -231,7 +231,7 @@ class Particle {
   
   public void setBorn() {
     this.born = true;
-    if (!hasChildren) {
+    if (!hasChildren && !ps.maxCapacityReached) {
       ps.createGeneration(this.generation + 1);
     }
   }

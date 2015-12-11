@@ -6,7 +6,7 @@
 public class ParticleSystem {
   public float lambda;
   // Safety net
-  public int MAX_CAPACITY = 3000;
+  public int MAX_CAPACITY = 1500;
   public boolean maxCapacityReached = false;
   public boolean simulationDone = false;
   public boolean result;
@@ -119,12 +119,16 @@ public class ParticleSystem {
     // double spacePerChild = totalSpace / this.numChildren;
     println("Number in generation:" + generationCount.get(i-1));
     double spacePerChild = simWidth / (generationCount.get(i - 1) + 1);
-    if (spacePerChild == 0) maxCapacityReached = true;
+    if (spacePerChild == 0) {maxCapacityReached = true;
+      println("Max capacity reached!");
+    }
     // x-coordinates
     float x = 0;
     // y-coordinates
     float y = (float) (VPAD + (i - 1) * (PARTICLE_HEIGHT + EDGE_HEIGHT) + (float) PARTICLE_HEIGHT / 2);
-    if (y > simHeight) maxCapacityReached = true;
+    if (y > simHeight) {maxCapacityReached = true;
+      println("Max capacity reached!");
+    }
     QueueLite<Particle> thisGeneration = generationQueue.get(i - 1);
     IteratorLite<Particle> iter = thisGeneration.iterator();
     while (iter.hasNext()) {
@@ -162,7 +166,8 @@ public class ParticleSystem {
       simulationDone = true;
       if (maxCapacityReached) result = true;
       else result = false;
-    }
+    } 
+    if (maxCapacityReached) return;
     if (particles.getSize() >= MAX_CAPACITY) {
       println("Max capacity reached! " + particles.getSize());
       maxCapacityReached = true;
@@ -172,7 +177,6 @@ public class ParticleSystem {
       println("Max generation reached: " + generationCount.size());
       return;
     }
-    if (maxCapacityReached) return;
     p = newParticles.poll();
     while (p != null) {
       particles.add(p);

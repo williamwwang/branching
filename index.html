@@ -67,6 +67,7 @@
               invalid = true;
             }
           } else {
+            if (isNaN(branchingRate)) invalid = true;
             constant = 0;
             if (dist == 'unif') {
               params.push(parseFloat(document.getElementById('unif_a').value));
@@ -90,7 +91,6 @@
                                         console.log(dist);
 //                                                  console.log(branchingType)
           if (!invalid) {
-            console.log(branchingType);
             sketchRunning = true;
             processingInstance.startSketch(dist, branchingRate, parseInt(branchingType), constant, params);
           } else {

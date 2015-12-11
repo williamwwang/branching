@@ -21,7 +21,7 @@ Distribution branchingDist;
 // custom distribution, lambda .8, killing .4
 // custom, lambda = .6, killing = .4 (after revision to birthtime determination)
 // Conditional (mode 3): lambda .8, constant 6
-// Conditional B-A (mode 4): lambda .6, constant 6 (max capacity may not be accurate)
+// Conditional B-A (mode 4): lambda .6, constant 6
 
 double simWidth = 400;
 double simHeight = 400;
