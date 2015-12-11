@@ -20,7 +20,6 @@
     <input type = "radio" name = "dist" value = "cubed_cdf">F(x) = x^3 on [0, 1]<br>
     -------------------------------------------------<br>
     <button onclick = "startSketch();">Start</button>
-    <button onclick = "stopSketch();">Stop</button>
 
     <script type = "application/javascript">
       var processingInstance;
@@ -37,11 +36,8 @@
         if (!processingInstance) {
           processingInstance = Processing.getInstanceById('branching');
         }
-
         if (on) {
           processingInstance.startSketch();
-        } else {
-          processingInstance.stopSketch();
         }
       }
     </script>

@@ -25,10 +25,7 @@ float lambdaKilling = .4;
 
 double simWidth = 400;
 double simHeight = 400;
-float stopTime = 0;
-float startTime = 0;
-boolean isLooping = true;
-
+boolean simRunning = false;
 void setup() {
   size(400, 400);
   frameRate(80);
@@ -36,27 +33,19 @@ void setup() {
   //ps = new ParticleSystem(lambda, unif, 2, 0);
   Distribution exp = new ExponentialDistribution(lambdaKilling);
   //ps = new ParticleSystem(lambda, exp, 3, 6);
-  ps = new ParticleSystem(lambda, exp, 4, 6, simWidth, simHeight);
+  //ps = new ParticleSystem(lambda, exp, 4, 6, simWidth, simHeight);
   Distribution custom = new CustomDistribution();
   //ps = new ParticleSystem(lambda, custom, 2, 0);
-  stopSketch();
+  noLoop();
   //startSketch();
 }
 
 void startSketch() {
-  if (!isLooping) {
-    startTime = millis();
-    ps.updateDelay(startTime - stopTime);
-    isLooping = true;
+  if (!simRunning) {
+    simRunning = true;
+    Distribution exp = new ExponentialDistribution(lambdaKilling);
+    ps = new ParticleSystem(lambda, exp, 4, 6, simWidth, simHeight);
     loop();
-  }
-}
-
-void stopSketch() {
-  if (isLooping) {
-    stopTime = millis();
-    isLooping = false;
-    noLoop();
   }
 }
 

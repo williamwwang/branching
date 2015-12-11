@@ -83,7 +83,7 @@ public class ParticleSystem {
     }
     p.setCoordinates((float) ((float) simWidth / 2), (float) VPAD + (float) ((float) PARTICLE_HEIGHT / 2));
     firstGen.add(p);
-    //println("First particle lifetime: " + p.lifetime);
+    println("First particle lifetime: " + p.lifetime);
     generationQueue.add(0, firstGen);
     particles.add(p);
     //particleShape.addChild(p.getShape());
@@ -91,7 +91,7 @@ public class ParticleSystem {
   
   // Creates the i-th generation, 1-indexed.
   public void createGeneration(int i) {
-    //println("Generation: " + i);
+    println("Generation: " + i);
     QueueLite<Particle> previousGeneration = generationQueue.get(i - 2);
     if (previousGeneration == null) {
       return;
@@ -117,7 +117,7 @@ public class ParticleSystem {
     // Possible bug: int division?
     // double totalSpace = displayWidth / ps.generationCount.get(this.generation);
     // double spacePerChild = totalSpace / this.numChildren;
-    //println("Number in generation:" + generationCount.get(i-1));
+    println("Number in generation:" + generationCount.get(i-1));
     double spacePerChild = simWidth / (generationCount.get(i - 1) + 1);
     if (spacePerChild == 0) maxCapacityReached = true;
     // x-coordinates
@@ -131,19 +131,6 @@ public class ParticleSystem {
       Particle p = iter.next();
       x += spacePerChild;
       p.setCoordinates(x, y);
-    }
-  }
-  
-  void updateDelay(float delayTime) {
-    IteratorLite<Particle> iter = particles.iterator();
-    while (iter.hasNext()) {
-      Particle part = iter.next();
-      part.delay(delayTime * TSCALE);
-    }
-    iter = newParticles.iterator();
-    while (iter.hasNext()) {
-      Particle part = iter.next();
-      part.delay(delayTime * TSCALE);      
     }
   }
   
@@ -177,15 +164,12 @@ public class ParticleSystem {
       else result = false;
     }
     if (particles.getSize() >= MAX_CAPACITY) {
-      if (maxCapacityReached) return;
       println("Max capacity reached! " + particles.getSize());
       maxCapacityReached = true;
       return;
     }
     if (generationCount.size() >= 32) {
-      if (maxCapacityReached) return;
       println("Max generation reached: " + generationCount.size());
-      maxCapacityReached = true;
       return;
     }
     if (maxCapacityReached) return;
