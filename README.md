@@ -32,3 +32,6 @@ Possible additions in the future:
 Wider variety of killing distributions
 Functionality to pause sketch and continue where it left off
 User-input killing distribution given by valid PDF or CDF
+
+Source code can be found here:
+https://github.com/williamwwang/branching
