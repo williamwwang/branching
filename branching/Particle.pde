@@ -11,6 +11,8 @@ class Particle {
   public float birthTime;
   // When this particle will die
   public float deathTime;
+  // Parent death time: used to synchronize for start/stop
+  public float parentDeathTime;
   // If this particle can die
   public boolean canDie;
   // If this particle has been born
@@ -71,8 +73,10 @@ class Particle {
     //this.part = createShape();
     if (parent == null) {
       this.generation = 1;
+      parentDeathTime = 0;
     } else {
       this.generation = parent.generation + 1;
+      parentDeathTime = parent.deathTime;
     }
     ps.newParticles.add(this);
     //if (born && !hasChildren) {
@@ -133,6 +137,7 @@ class Particle {
     birthTime += t;
     deathTime += t;
     initialLifetime += t;
+    parentDeathTime += t;
   }
   
   public void computeColor(double timeElapsed) {
@@ -187,6 +192,8 @@ class Particle {
   }
   
   public void update() {
+    if (generation == 1) println("First death time: " + deathTime);
+    println(isDead());
     // TODO: change the timings, computer color, set this to alive when it is time
     if (!born && millis()*ps.TSCALE >= this.birthTime) {
       this.setBorn();
@@ -210,7 +217,8 @@ class Particle {
       float timeElapsed = 0;
       if (parent == null) timeElapsed = millis()*ps.TSCALE;
       else {
-        timeElapsed = millis()*ps.TSCALE - parent.deathTime;
+        timeElapsed = millis()*ps.TSCALE - parentDeathTime;
+        //if (generation == 2) println("Lala " + timeElapsed);
       }
       computeColor(timeElapsed);
       if (timeElapsed > 0) {
