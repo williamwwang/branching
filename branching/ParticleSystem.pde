@@ -134,6 +134,19 @@ public class ParticleSystem {
     }
   }
   
+  void updateDelay(float delayTime) {
+    IteratorLite<Particle> iter = particles.iterator();
+    while (iter.hasNext()) {
+      Particle part = iter.next();
+      part.delay(delayTime * TSCALE);
+    }
+    iter = newParticles.iterator();
+    while (iter.hasNext()) {
+      Particle part = iter.next();
+      part.delay(delayTime * TSCALE);      
+    }
+  }
+  
   void update() {
     //println("Iter has next");
     //for (Particle part: particles) {

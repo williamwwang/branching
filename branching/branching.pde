@@ -25,6 +25,10 @@ float lambdaKilling = .4;
 
 double simWidth = 400;
 double simHeight = 400;
+float stopTime = 0;
+float startTime = 0;
+boolean isLooping = true;
+
 void setup() {
   size(400, 400);
   frameRate(80);
@@ -35,6 +39,25 @@ void setup() {
   ps = new ParticleSystem(lambda, exp, 4, 6, simWidth, simHeight);
   Distribution custom = new CustomDistribution();
   //ps = new ParticleSystem(lambda, custom, 2, 0);
+  stopSketch();
+  //startSketch();
+}
+
+void startSketch() {
+  if (!isLooping) {
+    startTime = millis();
+    ps.updateDelay(startTime - stopTime);
+    isLooping = true;
+    loop();
+  }
+}
+
+void stopSketch() {
+  if (isLooping) {
+    stopTime = millis();
+    isLooping = false;
+    noLoop();
+  }
 }
 
 void draw () {

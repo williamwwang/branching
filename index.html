@@ -5,6 +5,31 @@
   </head>
   <body>
     <h1>Branching Process Simulation</h1>
-    <canvas data-processing-sources="branching/Distributions.pde branching/Particle.pde branching/ParticleSystem.pde branching/RNG.pde branching/Utils.pde branching/branching.pde"></canvas>
+    <canvas id = "branching" data-processing-sources="branching/Distributions.pde branching/Particle.pde branching/ParticleSystem.pde branching/RNG.pde branching/Utils.pde branching/branching.pde"></canvas>
+    <button onclick = "startSketch();">Start</button>
+    <button onclick = "stopSketch();">Stop</button>
+    <script type = "application/javascript">
+      var processingInstance;
+
+      function startSketch() {
+        switchSketchState(true);
+      }
+
+      function stopSketch() {
+        switchSketchState(false);
+      }
+
+      function switchSketchState(on) {
+        if (!processingInstance) {
+          processingInstance = Processing.getInstanceById('branching');
+        }
+
+        if (on) {
+          processingInstance.startSketch();
+        } else {
+          processingInstance.stopSketch();
+        }
+      }
+    </script>
   </body>
 </html>

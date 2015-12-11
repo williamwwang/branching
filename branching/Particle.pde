@@ -129,6 +129,12 @@ class Particle {
     return lifetime <= 0;
   }
   
+  public void delay(float t) {
+    initialLifetime += t;
+    birthTime += t;
+    deathTime += t;
+  }
+  
   public void computeColor(double timeElapsed) {
     // MODE
     if ((ps.mode == 2 || ps.mode == 4) && timeElapsed < 0) {
