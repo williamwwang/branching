@@ -83,7 +83,7 @@ public class ParticleSystem {
     }
     p.setCoordinates((float) ((float) simWidth / 2), (float) VPAD + (float) ((float) PARTICLE_HEIGHT / 2));
     firstGen.add(p);
-    println("First particle lifetime: " + p.lifetime);
+    writeToOutput("First particle lifetime: " + p.lifetime);
     generationQueue.add(0, firstGen);
     particles.add(p);
     //particleShape.addChild(p.getShape());
@@ -91,7 +91,7 @@ public class ParticleSystem {
   
   // Creates the i-th generation, 1-indexed.
   public void createGeneration(int i) {
-    println("Generation: " + i);
+    writeToOutput("Generation: " + i);
     QueueLite<Particle> previousGeneration = generationQueue.get(i - 2);
     if (previousGeneration == null) {
       return;
@@ -117,17 +117,17 @@ public class ParticleSystem {
     // Possible bug: int division?
     // double totalSpace = displayWidth / ps.generationCount.get(this.generation);
     // double spacePerChild = totalSpace / this.numChildren;
-    println("Number in generation:" + generationCount.get(i-1));
+    writeToOutput("Number in generation:" + generationCount.get(i-1));
     double spacePerChild = simWidth / (generationCount.get(i - 1) + 1);
     if (spacePerChild == 0) {maxCapacityReached = true;
-      println("Max capacity reached!");
+      writeToOutput("Max capacity reached!");
     }
     // x-coordinates
     float x = 0;
     // y-coordinates
     float y = (float) (VPAD + (i - 1) * (PARTICLE_HEIGHT + EDGE_HEIGHT) + (float) PARTICLE_HEIGHT / 2);
     if (y > simHeight) {maxCapacityReached = true;
-      println("Max capacity reached!");
+      writeToOutput("Max capacity reached!");
     }
     QueueLite<Particle> thisGeneration = generationQueue.get(i - 1);
     IteratorLite<Particle> iter = thisGeneration.iterator();
@@ -169,12 +169,12 @@ public class ParticleSystem {
     } 
     if (maxCapacityReached) return;
     if (particles.getSize() >= MAX_CAPACITY) {
-      println("Max capacity reached! " + particles.getSize());
+      writeToOutput("Max capacity reached! " + particles.getSize());
       maxCapacityReached = true;
       return;
     }
     if (generationCount.size() >= 32) {
-      println("Max generation reached: " + generationCount.size());
+      writeToOutput("Max generation reached: " + generationCount.size());
       return;
     }
     p = newParticles.poll();

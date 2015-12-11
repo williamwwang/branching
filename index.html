@@ -5,7 +5,9 @@
   </head>
   <body>
     <h1>Branching Process Simulation</h1>
-    <canvas id = "branching" data-processing-sources="branching/Distributions.pde branching/Particle.pde branching/ParticleSystem.pde branching/RNG.pde branching/Utils.pde branching/branching.pde"></canvas><br>
+    <h3>Author: William Wang</h3>
+    Take a look at the <a href="README.md" target="_blank">README</a> for information on the project and instructions.<br>
+    -------------------------------------------------<br>
     Process Type:<br>
     <input type = "radio" name = "mode" id = "mode" value = "1" checked>Galton-Watson<br>
     <input type = "radio" name = "mode" id = "mode" value = "2">Birth-and-Assassination<br>
@@ -22,13 +24,17 @@
     -------------------------------------------------<br>
 
     <button onclick = "startSketch();">Start</button>
-    <button onclick = "resetSketch();">Reset</button>
+    <button onclick = "resetSketch();">Reset</button><br>
+    <canvas id = "branching" data-processing-sources="branching/Distributions.pde branching/Particle.pde branching/ParticleSystem.pde branching/RNG.pde branching/Utils.pde branching/branching.pde"></canvas>
+    <textarea id = "branchingLog" style = "width:400px; height:400px;" value = "Log:"></textarea>
+    <br>
 
     <script type = "application/javascript">
       var processingInstance;
       var incomplete = 'Some required fields are incomplete.';
       var invalid = false;
       var sketchRunning = false;
+      var logContents = 'Log:\n';
 
       function startSketch() {
         switchSketchState(true);
@@ -63,33 +69,32 @@
           var params = []
           if (branchingType == '3' || branchingType == '4') {
             if (isNaN(constant)) {
-              //writeToLog(incomplete);
+              writeToLog(incomplete);
               invalid = true;
             }
           } else {
-            if (isNaN(branchingRate)) invalid = true;
-            constant = 0;
-            if (dist == 'unif') {
-              params.push(parseFloat(document.getElementById('unif_a').value));
-              params.push(parseFloat(document.getElementById('unif_b').value));
-              if (isNaN(params[0]) || isNaN(params[1])) {
-                //writeToLog(incomplete);
-                invalid = true;
+            if (isNaN(branchingRate)) {
+              invalid = true;
+              writeToLog(incomplete);
+            } else {
+              constant = 0;
+              if (dist == 'unif') {
+                params.push(parseFloat(document.getElementById('unif_a').value));
+                params.push(parseFloat(document.getElementById('unif_b').value));
+                if (isNaN(params[0]) || isNaN(params[1])) {
+                  writeToLog(incomplete);
+                  invalid = true;
+                }
               }
-            }
-            if (dist == 'exp') {
-              params.push(parseFloat(document.getElementById('exp_lambda').value));
-              if (isNaN(params[0])) {
-                //writeToLog(incomplete);
-                invalid = true;
+              if (dist == 'exp') {
+                params.push(parseFloat(document.getElementById('exp_lambda').value));
+                if (isNaN(params[0])) {
+                  writeToLog(incomplete);
+                  invalid = true;
+                }
               }
             }
           }
-          console.log(branchingType);
-                    console.log(branchingRate);
-                              console.log(constant);
-                                        console.log(dist);
-//                                                  console.log(branchingType)
           if (!invalid) {
             sketchRunning = true;
             processingInstance.startSketch(dist, branchingRate, parseInt(branchingType), constant, params);
@@ -103,7 +108,16 @@
         if (!processingInstance || !sketchRunning) return;
         processingInstance.resetSketch();
         sketchRunning = false;
+        writeToLog('Simulation reset.');
       }
+
+      function writeToLog(msg) {
+        logContents = logContents + msg + '\n';
+        document.getElementById('branchingLog').value = logContents;
+      }
+
+      document.getElementById('branchingLog').value = logContents;
+
     </script>
   </body>
 </html>

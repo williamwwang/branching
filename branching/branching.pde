@@ -18,6 +18,7 @@ Distribution branchingDist;
  */
 
 // Interesting parameters:
+// mode 1, lambda = .5, unif 3, 5
 // custom distribution, lambda .8, killing .4
 // custom, lambda = .6, killing = .4 (after revision to birthtime determination)
 // Conditional (mode 3): lambda .8, constant 6
@@ -67,14 +68,19 @@ void initializeDist(String dist, float[] params) {
   if (dist.equals("cubed_cdf")) branchingDist = new CustomDistribution();
 }
 
+void writeToOutput(String s) {
+  // Hacky, relies on being embedded with a script that can write to log
+  writeToLog(s);
+}
+
 void draw () {
   background(0);
   if (ps != null) {
     ps.update();
     ps.display();
     if (ps.simulationDone) {
-      if (ps.result) println("Survival");
-      else println("Extinction at generation " + (ps.generationCount.size() - 1));
+      if (ps.result) writeToOutput("Survival");
+      else writeToOutput("Extinction at generation " + (ps.generationCount.size() - 1));
       noLoop();
     }
   }
