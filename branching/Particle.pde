@@ -130,9 +130,9 @@ class Particle {
   }
   
   public void delay(float t) {
-    initialLifetime += t;
     birthTime += t;
     deathTime += t;
+    initialLifetime += t;
   }
   
   public void computeColor(double timeElapsed) {

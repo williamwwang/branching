@@ -5,9 +5,23 @@
   </head>
   <body>
     <h1>Branching Process Simulation</h1>
-    <canvas id = "branching" data-processing-sources="branching/Distributions.pde branching/Particle.pde branching/ParticleSystem.pde branching/RNG.pde branching/Utils.pde branching/branching.pde"></canvas>
+    <canvas id = "branching" data-processing-sources="branching/Distributions.pde branching/Particle.pde branching/ParticleSystem.pde branching/RNG.pde branching/Utils.pde branching/branching.pde"></canvas><br>
+    Process Type:<br>
+    <input type = "radio" name = "mode" value = "1" checked>Galton-Watson<br>
+    <input type = "radio" name = "mode" value = "2">Birth-and-Assassination<br>
+    <input type = "radio" name = "mode" value = "3">Conditional-Uniform<br>
+    <input type = "radio" name = "mode" value = "4">Conditional-Birth-And-Assassination<br>
+    -------------------------------------------------<br>
+    Birth Rate: <input type = "text" name = "lambda" style = "width: 30px"><br>
+    Killing Distribution:<br>
+    <input type = "radio" name = "dist" value = "unif" checked>Uniform(a, b); a = <input
+    type = "text" name = "unif_a" style = "width: 30px">, b = <input type = "text" name = "unif_b" style = "width: 30px"><br>
+    <input type = "radio" name = "dist" value = "exp">Exponential(lambda); lambda = <input type = "text" name = "exp_lambda" style = "width: 30px"><br>
+    <input type = "radio" name = "dist" value = "cubed_cdf">F(x) = x^3 on [0, 1]<br>
+    -------------------------------------------------<br>
     <button onclick = "startSketch();">Start</button>
     <button onclick = "stopSketch();">Stop</button>
+
     <script type = "application/javascript">
       var processingInstance;
 
